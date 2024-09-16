@@ -9,7 +9,7 @@ class URLBase(BaseModel):
 
 # For Post method
 class URLCreate(URLBase):
-    shortened_url: str
+    pass
 
 # PATCH or PUT
 class URLUpdate(BaseModel):

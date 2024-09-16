@@ -5,19 +5,20 @@ from typing import List, Optional
 
 from app.models.url import Url
 from app.schemas.url import URLCreate, URLUpdate
+from app.utils.url import generate_short_url
 
 def create_url(db:Session, url_data:URLCreate) -> Url:
-    if url_data.shortened_url is None:
-        raise HTTPException(status_code=400, detail="Shortened URL not fount and not supported to generate it by the server till now.")
+    
 
-    existUrl = db.query(Url).filter(Url.shortened_url == url_data.shortened_url).first()
+    generated_shortened_url = generate_short_url()
+    while db.query(Url).filter(Url.shortened_url == generated_shortened_url).first() is not None:
+        generated_shortened_url = generate_short_url()
 
-    if existUrl is not None:
-        raise HTTPException(status_code=400, detail="Shortened URL already exists")
+    
     
     db_url = Url(
         original_url = url_data.original_url,
-        shortened_url = url_data.shortened_url,
+        shortened_url = generated_shortened_url,
         created_at = datetime.utcnow()
     )
 
