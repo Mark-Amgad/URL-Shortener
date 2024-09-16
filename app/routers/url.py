@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from app.dependencies import get_db
 from app.schemas.url import URLCreate, URLRead, URLUpdate
-from app.crud.url import create_url,get_all_urls,update_url
+from app.crud.url import create_url,get_all_urls,update_url,get_one_url_by_shortened_url
 
 router = APIRouter(
     prefix="/urls",
@@ -24,3 +24,8 @@ def get_shortened_urls(db: Session = Depends(get_db)):
 @router.patch("/{id}" , response_model=URLRead)
 def update_shortened_url(id:int,url_data_body:URLUpdate, db:Session = Depends(get_db)):
     return update_url(db,id,url_data_body)
+
+@router.get("/{shortened_url}",response_model=URLRead)
+def get_one_url(shortened_url:str,db:Session = Depends(get_db)):
+    return get_one_url_by_shortened_url(db,shortened_url)
+

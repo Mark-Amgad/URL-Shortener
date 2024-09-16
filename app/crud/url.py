@@ -47,5 +47,10 @@ def update_url(db:Session, id:int, url_data:URLUpdate)-> Url:
 
     return url_db
     
-
+def get_one_url_by_shortened_url(db:Session, shortened_url)-> Url:
+    url = db.query(Url).filter(Url.shortened_url == shortened_url).first()
+    if url is None:
+        raise HTTPException(status_code=404, detail="URL not found")
+    
+    return url
 
