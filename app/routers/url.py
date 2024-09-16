@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from typing import List
 from sqlalchemy.orm import Session
 from app.dependencies import get_db
-from app.schemas.url import URLCreate, URLRead
-from app.crud.url import create_url,get_all_urls
+from app.schemas.url import URLCreate, URLRead, URLUpdate
+from app.crud.url import create_url,get_all_urls,update_url
 
 router = APIRouter(
     prefix="/urls",
@@ -20,3 +20,7 @@ def create_shortened_url(url_data: URLCreate, db: Session = Depends(get_db)):
 def get_shortened_urls(db: Session = Depends(get_db)):
     urls = get_all_urls(db=db, limit=10,skip=0)
     return urls
+
+@router.patch("/{id}" , response_model=URLRead)
+def update_shortened_url(id:int,url_data_body:URLUpdate, db:Session = Depends(get_db)):
+    return update_url(db,id,url_data_body)
