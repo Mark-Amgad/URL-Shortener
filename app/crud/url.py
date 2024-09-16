@@ -31,3 +31,21 @@ def get_all_urls(db:Session, skip: int = 0, limit:int = 10) -> List[Url]:
     return db.query(Url).offset(skip).limit(limit).all()
 
 
+def update_url(db:Session, id:int, url_data:URLUpdate)-> Url:
+    url_db = db.query(Url).filter(Url.id == id).first()
+    if url_db is None:
+        raise HTTPException(status_code=404, detail="URL not found")
+    
+    if url_data.original_url is not None:
+        url_db.original_url = url_data.original_url
+    
+    if url_data.is_active is not None:
+        url_db.is_active = url_data.is_active
+    
+    db.commit()
+    db.refresh(url_db)
+
+    return url_db
+    
+
+
