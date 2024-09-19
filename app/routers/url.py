@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
+from typing_extensions import Annotated
 from typing import List
 from sqlalchemy.orm import Session
-from app.dependencies import get_db
+from app.dependencies import get_db,Pagination
 from app.schemas.url import URLCreate, URLRead, URLUpdate
-from app.crud.url import create_url,get_all_urls,update_url,get_one_url_by_shortened_url
+from app.crud.url import create_one,get_all,update_one,get_one,delete_one
 
 router = APIRouter(
     prefix="/urls",
@@ -14,18 +15,22 @@ router = APIRouter(
 
 @router.post("/", response_model=URLRead)
 def create_shortened_url(url_data: URLCreate, db: Session = Depends(get_db)):
-    return create_url(db=db, url_data=url_data)
+    return create_one(db=db, url_data=url_data)
 
 @router.get("/", response_model=List[URLRead])
-def get_shortened_urls(db: Session = Depends(get_db)):
-    urls = get_all_urls(db=db, limit=10,skip=0)
+def get_shortened_urls(pagination:Annotated[Pagination, Depends(Pagination)],db: Session = Depends(get_db)):
+    urls = get_all(db=db, limit=pagination.limit,skip=pagination.skip)
     return urls
 
 @router.patch("/{id}" , response_model=URLRead)
 def update_shortened_url(id:int,url_data_body:URLUpdate, db:Session = Depends(get_db)):
-    return update_url(db,id,url_data_body)
+    return update_one(db,id,url_data_body)
 
 @router.get("/{shortened_url}",response_model=URLRead)
 def get_one_url(shortened_url:str,db:Session = Depends(get_db)):
-    return get_one_url_by_shortened_url(db,shortened_url)
+    return get_one(db,shortened_url)
+
+@router.delete("/{id}")
+def delete_url_by_id(id:int,db:Session = Depends(get_db)):
+    return delete_one(db,id)
 

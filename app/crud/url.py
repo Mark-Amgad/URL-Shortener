@@ -7,7 +7,7 @@ from app.models.url import Url
 from app.schemas.url import URLCreate, URLUpdate
 from app.utils.url import generate_short_url
 
-def create_url(db:Session, url_data:URLCreate) -> Url:
+def create_one(db:Session, url_data:URLCreate) -> Url:
     
 
     generated_shortened_url = generate_short_url()
@@ -28,11 +28,11 @@ def create_url(db:Session, url_data:URLCreate) -> Url:
     return db_url
 
 
-def get_all_urls(db:Session, skip: int = 0, limit:int = 10) -> List[Url]:
+def get_all(db:Session, skip: int = 0, limit:int = 10) -> List[Url]:
     return db.query(Url).offset(skip).limit(limit).all()
 
 
-def update_url(db:Session, id:int, url_data:URLUpdate)-> Url:
+def update_one(db:Session, id:int, url_data:URLUpdate)-> Url:
     url_db = db.query(Url).filter(Url.id == id).first()
     if url_db is None:
         raise HTTPException(status_code=404, detail="URL not found")
@@ -48,10 +48,19 @@ def update_url(db:Session, id:int, url_data:URLUpdate)-> Url:
 
     return url_db
     
-def get_one_url_by_shortened_url(db:Session, shortened_url)-> Url:
+def get_one(db:Session, shortened_url)-> Url:
     url = db.query(Url).filter(Url.shortened_url == shortened_url).first()
     if url is None:
         raise HTTPException(status_code=404, detail="URL not found")
     
     return url
 
+def delete_one(db:Session, id:int)-> str:
+    url = db.query(Url).filter(Url.id == id).first()
+    if url is None:
+        raise HTTPException(status_code=404, detail="URL not found")
+
+    db.delete(url)
+    db.commit()
+
+    return {"message": "Deleted Successfully"}
