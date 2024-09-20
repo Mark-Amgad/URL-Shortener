@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,HTTPException
 from typing_extensions import Annotated
 from typing import List
 from sqlalchemy.orm import Session
 from app.dependencies import get_db,Pagination
 from app.schemas.url import URLCreate, URLRead, URLUpdate
+import validators
 from app.crud.url import create_one,get_all,update_one,get_one,delete_one
 
 router = APIRouter(
@@ -15,6 +16,9 @@ router = APIRouter(
 
 @router.post("/", response_model=URLRead)
 def create_shortened_url(url_data: URLCreate, db: Session = Depends(get_db)):
+    if not validators.url(url_data.original_url):
+        raise HTTPException(status_code=400, detail="Your provided URL is not valid")
+    
     return create_one(db=db, url_data=url_data)
 
 @router.get("/", response_model=List[URLRead])
