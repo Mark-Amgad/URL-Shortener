@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: any_password
+      POSTGRES_DB: url_shortener_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  shortened_url_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shortened_url_app
+    environment:
+      DB_USERNAME: postgres
+      DB_PASSWORD: any_password
+      DB_HOST: postgres
+      DB_NAME: url_shortener_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
