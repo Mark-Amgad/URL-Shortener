@@ -1,6 +1,4 @@
 from app.database import SessionLocal
-from fastapi import Query
-
 
 def get_db():
     db = SessionLocal()
@@ -8,7 +6,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
 
 
 class Pagination:
