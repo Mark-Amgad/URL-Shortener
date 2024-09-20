@@ -19,11 +19,17 @@ This is a URL shortener backend application developed using FastAPI. It allows u
 git clone https://github.com/Mark-Amgad/URL-Shortener
 ```
 
+2. Navigate to the project directory
+
 ```
 cd URL-Shortener
 ```
 
-RUN `docker-compose up --build`
+3. Build the containers (Run the application)
+
+```
+docker-compose up --build
+```
 
 ## API Documentation
 
